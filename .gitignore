@@ -1,0 +1,32 @@
+# Node dependencies
+node_modules/
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Vite output
+dist/
+out/
+
+# Temporary or build files
+.temp/
+.cache/
+
+# Environment and configuration files
+.env
+.env.*.local
+
+# Neovim swap, backup, and undo files
+*.swp
+*.swo
+*.bak
+*.tmp
+*~ 
+.netrwhist
+undodir/
+
+# Lock files
+package-lock.json
+yarn.lock
