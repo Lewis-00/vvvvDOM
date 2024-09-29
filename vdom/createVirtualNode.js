@@ -1,4 +1,5 @@
-export const renderElement = (vNode) => {
+// This function will create a dom element like <div></div> with additional attributes and children
+export const createVirtualNode = (vNode) => {
   if (typeof vNode === "string") {
     return document.createTextNode(vNode);
   }
@@ -10,7 +11,7 @@ export const renderElement = (vNode) => {
     });
 
     vNode.children.forEach((child) => {
-      $element.append(renderElement(child));
+      $element.append(createVirtualNode(child));
     });
 
     return $element;

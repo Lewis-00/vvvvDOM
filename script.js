@@ -1,10 +1,23 @@
-import { createElement } from "./vdom/createElement";
-import { mountIntoDom } from "./vdom/mount";
-import { renderElement } from "./vdom/renderElement";
+import { mountVirtualNode } from "./vdom/mountVirtualNode";
+import appElement from "./elements/appElement";
+import { diffAlgorithm } from "./vdom/diffAlgorithm";
+import { createVirtualNode } from "./vdom/createVirtualNode";
 
-const vImgEl = createElement("img", {
-  src: "https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExMnZiZmt0NnFvaTJhMXZicXE2bGt0dGYzOXNtMmV2NDMxdGE2bm5hMSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/MUHNdrm3vk7MoyUsCO/giphy.gif",
-});
-const vApp = createElement("div", { id: "app" }, ["Hello world", vImgEl]);
+let count = 0;
+let appVNode = appElement(count);
 
-mountIntoDom(renderElement(vApp), document.getElementById("root"));
+let $root = mountVirtualNode(
+  createVirtualNode(appVNode),
+  document.getElementById("root"),
+);
+const idInterval = setInterval(() => {
+  count++;
+  const newAppVNode = appElement(count);
+  $root = diffAlgorithm(appVNode, newAppVNode, $root);
+  appVNode = newAppVNode;
+}, 1000);
+
+setTimeout(() => {
+  clearInterval(idInterval);
+  $root = diffAlgorithm(appVNode, undefined, $root);
+}, 3500);
