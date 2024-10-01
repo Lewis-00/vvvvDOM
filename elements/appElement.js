@@ -1,7 +1,8 @@
 import { createObjElement } from "../vdom/createObjElement";
 import imageElement from "./imageElement";
 
-const dynamicElementsList = (length) => {
+//create dynamicList based on count prop and add each time a random image in a random index
+const getDynamicElementsList = (length) => {
   const dynamicElements = Array.from({ length }, (_, i) => {
     return createObjElement("p", {}, [`this is the ${i + 1} child`]);
   });
