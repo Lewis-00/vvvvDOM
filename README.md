@@ -8,10 +8,5 @@ DOM operates and how it can be used to optimize the rendering process in web app
 
 I've taken a inspiration from **Jason Yu**, a software engineer, who has shared his insights on the virtual DOM
 
-## Key Details
-
-- The variables starting with `$` represent **real DOM elements**.
-- The variables starting with `v` represent **virtual DOM nodes**.
-
 Thanks for checking it out! 😄
 
