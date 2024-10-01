@@ -2,14 +2,20 @@ import { createObjElement } from "./createObjElement";
 import { createVirtualNode } from "./createVirtualNode";
 import { mountVirtualNode } from "./mountVirtualNode";
 
+//combine the children with the same index as old and new
+const combineChildren = (oldChildren, newChildren) => {
+  const minLength = Math.min(oldChildren.length, newChildren.length);
+  return oldChildren.slice(0, minLength).map((oldChild, i) => ({
+    old: oldChild,
+    new: newChildren[i],
+  }));
+};
+
 const propsDiffAlgorithm = (oldVNodeProps, newVNodeProps, $root) => {
   const propsToAdd = new Map(Object.entries(newVNodeProps));
-  const propsToRemove = [];
-  for (let key of Object.keys(oldVNodeProps)) {
-    if (!propsToAdd.has(key)) {
-      propsToRemove.push(key);
-    }
-  }
+  const propsToRemove = Object.keys(oldVNodeProps).filter(
+    (propKey) => !propsToAdd.has(propKey),
+  );
 
   propsToAdd.forEach((value, key) => {
     $root.setAttribute(key, value);
@@ -20,37 +26,46 @@ const propsDiffAlgorithm = (oldVNodeProps, newVNodeProps, $root) => {
   });
 };
 
-const childrenDiffAlgorithm = (oldVNodeProps, newVNodeProps, $root) => {
-  //wip
-  return $root;
-};
+const childrenDiffAlgorithm = (oldVNodeChildren, newVNodeChildren, $root) => {
+  const combinedVChildren = combineChildren(oldVNodeChildren, newVNodeChildren);
+  const $childList = $root.childNodes;
 
-export const diffAlgorithm = (oldVNode, newVNode, $root) => {
-  if (newVNode === undefined) {
-    return mountVirtualNode(
-      createVirtualNode(createObjElement("div", { id: "root" })),
-      $root,
+  //replacing the $childNodes with the same index in the list of child
+  for (let i = 0; i < combinedVChildren.length; i++) {
+    const currentChildToDiff = combinedVChildren[i];
+    diffAlgorithm(
+      currentChildToDiff.old,
+      currentChildToDiff.new,
+      $childList[i],
     );
   }
 
-  if (typeof oldVNode === "string" || typeof newVNode === "string") {
-    if (oldVNode !== newVNode) {
-      return mountVirtualNode(createVirtualNode(newVNode), $root);
-    } else {
-      return $root;
-    }
+  //appending the rest of the new virtual nodes if exist
+  const newVNodeToAppend = newVNodeChildren.slice(combinedVChildren.length);
+  if (newVNodeToAppend.length) {
+    newVNodeToAppend.forEach((vNode) =>
+      $root.appendChild(createVirtualNode(vNode)),
+    );
+  }
+};
+
+export const diffAlgorithm = (oldVNode, newVNode, $root) => {
+  if (!newVNode) {
+    $root.remove();
+    return null;
   }
 
-  if (oldVNode.tagName !== newVNode.tagName) {
+  if (
+    newVNode.tagName !== oldVNode.tagName ||
+    typeof newVNode !== typeof oldVNode ||
+    (typeof newVNode === "string" && oldVNode !== newVNode)
+  ) {
     return mountVirtualNode(createVirtualNode(newVNode), $root);
   }
 
-  propsDiffAlgorithm(oldVNode.props, newVNode.props, $root);
-  // const childrenDiff = childrenDiffAlgorithm(
-  //   oldVNode.children,
-  //   newVNode.children,
-  //   $root
-  // );
-
+  if (newVNode.tagName) {
+    propsDiffAlgorithm(oldVNode.props, newVNode.props, $root);
+    childrenDiffAlgorithm(oldVNode.children, newVNode.children, $root);
+  }
   return $root;
 };
