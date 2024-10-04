@@ -1,22 +1,8 @@
-import { mountVirtualNode } from "./vdom/mountVirtualNode";
-import appElement from "./elements/appElement";
-import { diffAlgorithm } from "./vdom/diffAlgorithm";
-import { createVirtualNode } from "./vdom/createVirtualNode";
+import { domMain } from "./rendering-mode/normalScript.js";
+import { virtualDomMain } from "./rendering-mode/virutalScript.js";
 
-let count = 0;
-let appObjElement = appElement(count);
+//use this to see changes using a virtual dom
+virtualDomMain();
 
-let $root = mountVirtualNode(
-  createVirtualNode(appObjElement),
-  document.getElementById("root"),
-);
-const idInterval = setInterval(() => {
-  count++;
-  const newAppObjElement = appElement(count);
-  $root = diffAlgorithm(appObjElement, newAppObjElement, $root);
-  appObjElement = newAppObjElement;
-}, 1000);
-
-setTimeout(() => {
-  clearInterval(idInterval);
-}, 10000);
+//use this to see changes directly on the DOM
+// domMain();
