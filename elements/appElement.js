@@ -18,7 +18,7 @@ const appElement = (count) => {
   return createObjElement("div", { id: "app" }, [
     `the count is ${count}`,
     createObjElement("input", { type: "text" }),
-    ...dynamicElementsList(count),
+    ...getDynamicElementsList(count),
   ]);
 };
 
